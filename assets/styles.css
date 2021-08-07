@@ -14,7 +14,7 @@ body {
 	--gap: 1rem;
 	--rng-h: 2rem;
 
-	background-color: hsl(var(--h), var(--s), 20%);
+	background-color: hsl(var(--h), var(--s), var(--l, 25%));
 	min-block-size: 100%;
 	min-inline-size: 100%;
 }

@@ -59,108 +59,11 @@ function P(o, t) {
 function R(max, min = 0, f = true) {
   return f ? Math.floor(Math.random() * (max - min) + min) : Math.random() * max;
 };
-
-
-
-function saveSVG(svg, ext = 'png') {
-  const D = (href, name) => {
-    const L = document.createElement('a');
-    L.download = name;
-    L.style.opacity = "0";
-    document.body.append(L);
-    L.href = href;
-    L.click();
-    L.remove()
-  }
-  const P = (p) => getComputedStyle(document.body).getPropertyValue(p).trim();
-
-  const h = P('--h');
-  const s = P('--s');
-  const {width, height} = svg.getBBox(); 
-  let clone = svg.outerHTML.replaceAll('var(--h)', h).replaceAll('var(--s)', s);
-  const blob = new Blob([clone],{type:'image/svg+xml;charset=utf-8'});
-  const format = { png: '', jpg: 'image/jpg', webp: 'image/webp' };
-  const img = new Image();
-
-  img.onload = () => {
-    const C = document.createElement('canvas');
-    C.width = width;
-    C.height = height;
-    const X = C.getContext('2d');
-    X.fillStyle = `hsl(${h}, ${s}, 20%)`;
-    X.fillRect(0, 0, width, height);
-    X.drawImage(img, 0, 0, width, height);
-    D(C.toDataURL(format[ext]), `image.${ext}`)
-  };
-  img.src = URL.createObjectURL(blob);
-}
-
-  /* getCachedItem */
-  async function getCachedItem(url, store = 'store-v1', cachetime = 86400000) {
-    const valid = (response) => {
-      if (!response) return false;
-      const timestamp = response.headers.get('timestamp')-0 + cachetime;
-      return (timestamp > Date.now())
-    }
-    const cache = await caches.open(store);
-    return cache.match(url).then(response => {
-      if (valid(response)) return response;
-      return fetch(url).then(response => {
-        const clone = response.clone();
-        const headers = new Headers(clone.headers);
-        headers.append('timestamp', Date.now());
-        cache.put(url, new Response(clone.body, {
-          status: clone.status,
-          statusText: clone.statusText,
-          headers
-        }));
-        return response
-      })
-    })
-  }
-
-	async function blog(id) {
-		getCachedItem(`https://dev.to/api/articles${id ? `/${id}` : '?username=madsstoumann'}`)
-    .then(response => response.json())
-    .then(json => {
-      console.log(json)
-      if (Array.isArray(json)) {
-        bloginner.innerHTML = json.map(entry => `<a href="#blog" data-id="${entry.id}">${entry.cover_image ? `<img src="${entry.cover_image}">`:''}${entry.title}</a><br />`).join('');
-      }
-      else {
-        blogheader.innerText = json.title;
-        bloginner.innerHTML = json.body_html;
-      }
-    })
-	}
-
-  window.addEventListener('hashchange', () => {
-
-    if (location.hash.startsWith('#blog')) {
-      console.log(location)
-      const params = new URLSearchParams(location.href);
-    if (params) { 
-      for(var value of params.values()) {
-        if (value) {
-          // blog(value)
-
-        }
-        else {
-          blog();
-        };
-      }
-    }
-    }
-  });
-	// blog();
-  // blog('653154');
-  // blog('612806');
-
 	
 A.addEventListener('input', G);
 O.observe(document.body);
 h.addEventListener('input', () => document.body.style.setProperty('--h', h.valueAsNumber));
 da.addEventListener('click', () => document.body.style.setProperty('--animn', da.checked ? 'none':'unset'));
+l.addEventListener('input', () => document.body.style.setProperty('--l', l.valueAsNumber+'%'));
 s.addEventListener('input', () => document.body.style.setProperty('--s', s.valueAsNumber+'%'));
 sp.addEventListener('input', () => document.body.style.setProperty('--speed', sp.valueAsNumber));
-sv.addEventListener('click', () => saveSVG(S,A.elements.f.value));
